@@ -1,6 +1,6 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
-import { DEVICES, DOWNLOADS, GUIDES } from './data/guides.js'
+import { DEVICES, DOWNLOADS, GUIDES, variantOf } from './data/guides.js'
 import StepCard from './components/StepCard.vue'
 
 const STORAGE = 'root-wizard-v1'
@@ -24,7 +24,26 @@ const state = reactive(initial)
 watch(state, (v) => localStorage.setItem(STORAGE, JSON.stringify(v)), { deep: true })
 
 const device = computed(() => DEVICES.find((d) => d.id === state.deviceId) || DEVICES[0])
-const guide = computed(() => GUIDES[state.deviceId])
+const rawGuide = computed(() => GUIDES[state.deviceId])
+
+// 'any' = no model picked yet → both instruction sets are shown until one is chosen
+const variant = computed(() => variantOf(state.fields.model))
+const spec = computed(() => {
+  const s = device.value.specs?.[variant.value]
+  return s || { soc: device.value.soc, os: device.value.os, rootTool: device.value.rootTool }
+})
+const visible = (o) => !o.when || variant.value === 'any' || o.when === variant.value
+
+const guide = computed(() => {
+  const g = rawGuide.value
+  if (!g) return g
+  return {
+    ...g,
+    phases: g.phases
+      .map((ph) => ({ ...ph, steps: ph.steps.filter(visible) }))
+      .filter((ph) => ph.steps.length)
+  }
+})
 
 const flat = computed(() => {
   const out = []
@@ -39,6 +58,33 @@ const idxOf = computed(() => {
   return i < 0 ? 0 : i
 })
 const current = computed(() => flat.value[idxOf.value] || flat.value[0])
+
+// Picking a model drops the other phone's steps out of the sidebar.
+// Remember where we were so the wizard does not bounce back to step 1.
+const nav = { idx: 0, id: null }
+watch(
+  () => [state.pos.p, state.pos.s],
+  () => {
+    const f = flat.value
+    const i = f.findIndex((x) => x.pi === state.pos.p && x.si === state.pos.s)
+    if (i >= 0) {
+      nav.idx = i
+      nav.id = f[i].step.id
+    }
+  },
+  { immediate: true }
+)
+watch(
+  () => state.fields.model,
+  () => {
+    const f = flat.value
+    if (!f.length) return
+    let i = f.findIndex((x) => x.step.id === nav.id)
+    if (i < 0) i = Math.min(nav.idx, f.length - 1)
+    const n = f[Math.max(0, i)] || f[0]
+    state.pos = { p: n.pi, s: n.si }
+  }
+)
 
 function checksFor(stepId) {
   if (!state.checks[stepId]) state.checks[stepId] = {}
@@ -109,7 +155,10 @@ const phaseStatus = (pi) => {
 }
 const fwLink = computed(() => {
   const m = state.fields.model
-  return m ? `https://samfw.com/firmware/${m}` : 'https://samfw.com/firmware/SM-J400F'
+  if (m) return `https://samfw.com/firmware/${m}`
+  return variant.value === 'j4core'
+    ? 'https://samfw.com/firmware/SM-J410G'
+    : 'https://samfw.com/firmware/SM-J400F'
 })
 </script>
 
@@ -163,11 +212,25 @@ const fwLink = computed(() => {
       <aside class="side">
         <div class="specbox">
           <div class="specname">{{ device.name }}</div>
-          <div class="specline">{{ device.soc }}</div>
-          <div class="specline">{{ device.os }}</div>
-          <div class="specline tool">{{ device.rootTool }}</div>
+          <div class="specline">{{ spec.soc }}</div>
+          <div class="specline">{{ spec.os }}</div>
+          <div class="specline tool">{{ spec.rootTool }}</div>
           <div class="models">
-            <span v-for="m in device.models" :key="m" class="chip">{{ m }}</span>
+            <span
+              v-for="m in device.models"
+              :key="m"
+              class="chip"
+              :class="{ on: m === state.fields.model }"
+            >{{ m }}</span>
+          </div>
+          <div v-if="variant === 'any'" class="pickhint">
+            Pick your model in step 3 — the steps below switch for SM‑J410G (J4 Core).
+          </div>
+          <div v-else-if="variant === 'j4core'" class="pickhint">
+            Galaxy J4 Core path: boot image → BL slot.
+          </div>
+          <div v-else class="pickhint">
+            Galaxy J4 (2018) path: patched AP → AP slot.
           </div>
         </div>
 
@@ -188,6 +251,7 @@ const fwLink = computed(() => {
               <button @click="jump(pi, si)">
                 <i class="dot" />
                 <span>{{ st.title }}</span>
+                <em v-if="st.when" class="wtag">{{ st.when === 'j4core' ? 'J410' : 'J400' }}</em>
               </button>
             </li>
           </ol>
@@ -290,6 +354,10 @@ const fwLink = computed(() => {
 .specline { color: var(--muted); font-size: 12.7px; margin-top: 3px; }
 .specline.tool { color: var(--accent); }
 .models { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.pickhint {
+  margin-top: 10px; padding-top: 9px; border-top: 1px dashed var(--border);
+  font-size: 12.5px; color: var(--accent);
+}
 
 .phase { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 .phasehead {

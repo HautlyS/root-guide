@@ -36,7 +36,12 @@ const chosen = computed(() => {
         <div class="eyebrow">Step {{ stepNo }} / {{ total }}</div>
         <h2>{{ step.title }}</h2>
       </div>
-      <span class="chip" :class="{ ok: isDone }">{{ isDone ? '✓ completed' : 'in progress' }}</span>
+      <div class="headright">
+        <span v-if="step.when" class="wtag" :class="{ core: step.when === 'j4core' }">
+          {{ step.when === 'j4core' ? 'Galaxy J4 Core · SM-J410F/G' : 'Galaxy J4 · SM-J400F/G/M' }}
+        </span>
+        <span class="chip" :class="{ ok: isDone }">{{ isDone ? '✓ completed' : 'in progress' }}</span>
+      </div>
     </header>
 
     <p v-if="step.lead" class="lead">{{ step.lead }}</p>
@@ -77,6 +82,8 @@ const chosen = computed(() => {
   padding: 22px 24px;
 }
 .head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+.headright { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.wtag.core { border-color: var(--accent-2); color: var(--accent-2); }
 .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 h2 { margin: 4px 0 0; font-size: 21px; line-height: 1.3; }
 .lead { color: #b9c4d2; margin: 12px 0 0; }

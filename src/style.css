@@ -70,3 +70,10 @@ code, .mono { font-family: var(--mono); font-size: .9em; }
 }
 .chip.ok { color: var(--accent); border-color: #238636; }
 .chip.warn { color: var(--warn); border-color: #9e6a03; }
+.chip.on { color: var(--accent); border-color: var(--accent-2); background: rgba(88, 166, 255, .14); }
+
+.wtag {
+  font-style: normal; font-size: 10px; letter-spacing: .04em; font-weight: 700;
+  padding: 1px 6px; border-radius: 999px; flex: none;
+  border: 1px solid var(--border); color: var(--muted);
+}
