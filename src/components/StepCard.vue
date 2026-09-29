@@ -99,4 +99,16 @@ h2 { margin: 4px 0 0; font-size: 21px; line-height: 1.3; }
   color: #f2cc60; font-size: 14px;
 }
 .good { margin-top: 12px; color: var(--accent); font-weight: 600; }
+
+@media (max-width: 940px) {
+  .card { padding: 16px 15px 18px; border-radius: 14px; }
+  .head { gap: 10px; }
+  h2 { font-size: 18.5px; }
+  .lead { font-size: 14.5px; margin-top: 10px; }
+  .verify { margin-top: 17px; padding-top: 15px; }
+  .vq { font-size: 14.7px; margin-bottom: 9px; }
+  .opts { gap: 8px; }
+  .opts button { flex: 1 1 132px; min-height: 46px; }
+  .help, .good { font-size: 14px; }
+}
 </style>

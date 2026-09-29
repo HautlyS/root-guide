@@ -124,4 +124,20 @@ function copied(text, i) {
   padding: 10px 12px; font: inherit; outline: none;
 }
 .fieldline input:focus, .fieldline select:focus { border-color: var(--accent-2); }
+
+@media (max-width: 940px) {
+  .items { gap: 11px; margin-top: 13px; }
+  .text { font-size: 14.7px; }
+  .note { font-size: 13px; }
+  .warnbox { font-size: 13.7px; padding: 11px 12px; }
+  .checkline { padding: 13px; gap: 12px; min-height: 48px; font-size: 14.7px; }
+  .checkline input { width: 20px; height: 20px; }
+  .checkline.mini { padding: 9px 12px; min-height: 42px; justify-content: center; }
+  .linkline { flex-direction: column; align-items: stretch; gap: 9px; }
+  .linkline .linkmain a { font-size: 15px; }
+  .fieldline input, .fieldline select {
+    font-size: 16px; padding: 12px; border-radius: 11px;
+  }
+  .cmdline .codeblock { font-size: 12.5px; padding: 12px 72px 12px 12px; }
+}
 </style>
