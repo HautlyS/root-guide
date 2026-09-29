@@ -96,10 +96,10 @@ export const DOWNLOADS = [
     what: 'Galaxy J4 (2018) only. Optional — only needed if you want custom ROMs later.'
   },
   {
-    id: 'twrp-j4core',
-    name: 'Unofficial TWRP 3.2.3 for Galaxy J4 Core (SM-J410F/G)',
-    url: 'https://unofficialtwrp.com/twrp-3-2-3-root-galaxy-j4-core-sm-j410g/',
-    what: 'J4 Core only. Not required for Magisk root — the wizard never needs it.'
+    id: 'xda-j4core',
+    name: 'XDA step-by-step root guide for the Galaxy J4 Core',
+    url: 'https://xdaforums.com/t/root-samsung-galaxy-j4-core-sm-j410f-sm-j410f-ds-sm-j410g-j4coreltejx-xx.4017391/',
+    what: 'SM-J410F/G reference this wizard follows — also carries the OrangeFox / TWRP links for the J4 Core.'
   },
   {
     id: 'sevenzip',
@@ -226,6 +226,7 @@ export const J4_GUIDE = {
             { t: 'warn', v: 'Because of the 1 GB RAM we never patch the whole AP file on this phone — that fails halfway. The wizard uses the boot-image path only.' },
             { t: 'text', v: 'No stock BL/CP/CSC flash is needed if the firmware on the phone already matches your build — you flash a single small file.' },
             { t: 'warn', v: 'No official TWRP (only an unofficial 3.2.3 / OrangeFox), and KernelSU / APatch have no builds — Magisk is the only option.' },
+            { t: 'link', ref: 'xda-j4core', check: false },
             { t: 'check', v: 'Confirmed: my model starts with SM-J410, I am on the Galaxy J4 Core path.' }
           ]
         },
